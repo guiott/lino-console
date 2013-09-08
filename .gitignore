@@ -1,0 +1,8 @@
+.svn/
+nbproject/
+node_modules/.bin/serialportlist
+node_modules/.bin/serialportterm
+node_modules/express/
+node_modules/jade/
+node_modules/serialport/
+node_modules/socket.io/
