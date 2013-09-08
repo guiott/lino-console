@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html><head>
+<!--<html manifest="demo.manifest"><head>
+-->
+<meta http-equiv = "content-type" content="text/html; charset=UTF-8"/>
+<!-- 
+<meta name="viewport" content = "width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+ -->
+
+    <title>Lino Console</title>
+    <link rel="stylesheet" href="stylesheets/main.css" type="text/css" />
+</head>
+<body onload="init();">
+   
+<div id="divFrame"><canvas id="canvasFrame" width="1070" height="700"></canvas>
+
+  <div id=divStream style="background-image: url(../images/StreamFrame.png); width: 649px; height: 488px;">
+    <table>
+    <tbody>
+  			<tr>
+          <td>
+            <div id="webcam"><noscript><img src="/?action=snapshot" /></noscript></div>
+          </td>
+        </tr>
+    </tbody></table>
+  </div>
+  
+  <span id=divCompass1>
+  	<canvas id="canvasCompass1" width="141" height="141">No canvas in your browser...sorry...</canvas>
+  </span>
+  <span id=divHorizon><canvas id="canvasHorizon1" width="141" height="141"></canvas></span>
+  <span id=divSpeed><canvas id="canvasSpeed" width="141" height="141"></canvas></span>
+  <span id=divCompass2><canvas id="canvasCompass2" width="141" height="141"></canvas></span>
+  <span id=divClock><canvas id="canvasClock1" width="141" height="141"></canvas></span>
+  <span id=divThermoL><canvas id="canvasThermoL" width="85" height="230"></canvas></span>
+  <span id=divThermoR><canvas id="canvasThermoR" width="85" height="230"></canvas></span>
+  <span id=divBattL><canvas id="canvasBatteryL" width="80" height="36"></canvas></span>
+  <span id=divBattR><canvas id="canvasBatteryR" width="80" height="36"></canvas></span>
+  <!--<canvas id="joyCanvasR" width="170" height="170"></canvas></br>
+  <canvas id="joyCanvasL" width="170" height="170"></canvas></br>-->
+
+  <div id=divGpsPos>
+  <table>
+    <tbody>
+  			<tr>
+          <td>
+            <canvas id="canvasGpsPos" width="350" height="30"></canvas>
+          </td>
+        </tr>
+    </tbody></table>
+  </div>
+  
+  <div id=divGpsInfo>
+  <table>
+    <tbody>
+  			<tr>
+          <td>
+            <canvas id="canvasGpsInfo" width="350" height="30"></canvas>
+          </td>
+        </tr>
+    </tbody></table>
+  </div>
+
+  <div id=divLeftMotor>
+  <table>
+        <tbody>
+  			<tr>
+          <td>
+            <canvas id="canvasFLMotorC" width="160" height="100"></canvas>
+            <canvas id="canvasFLMotorS" width="160" height="100"></canvas>
+          </td>
+  </tr>
+  <tr>
+          <td>
+            <canvas id="canvasRLMotorC" width="160" height="100"></canvas>
+            <canvas id="canvasRLMotorS" width="160" height="100"></canvas>
+          </td>
+  </tr>
+  </tbody></table>
+  </div>
+  
+<div id=divRightMotor>
+  <table>
+        <tbody>
+  			<tr>
+            <td>
+  				<canvas id="canvasFRMotorC" width="160" height="100"></canvas>
+  				<canvas id="canvasFRMotorS" width="160" height="100"></canvas>
+  			 </td>
+  </tr>
+   <tr>
+            <td>
+				<canvas id="canvasRRMotorC" width="160" height="100"></canvas>
+  				<canvas id="canvasRRMotorS" width="160" height="100"></canvas>
+  			 </td>
+  </tr>
+  </tbody></table>
+</div>
+  
+  <span id=divLed1><canvas id="canvasLed1" width="15" height="15"></canvas></span>
+  <div id=divStreamInfo><canvas id="divStreamInf" width="200" height="200"></canvas>
+  
+      <p>Stream<br><span id="info">-</span><br>
+      Avg<sub id="fN">-</sub> : <span  id="ravgms">-</span> ms (<span  id="ravgfps">-</span> fps)
+      </p>
+      
+  </div>
+
+
+      
+</div>
+          
+
+<script src="javascripts/tween-min.js"></script>
+<script src="javascripts/steelseries-min.js"></script>
+<script src="javascripts/gauges.js"></script>
+<script src="javascripts/video.js"></script>
+<script src="javascripts/Vector2.js"></script>
+<script src="socket.io/socket.io.js"></script>
+
+<script src="javascripts/joy.js"></script>
+<!--<script src="javascripts/demo.js"></script>-->
+<script src="javascripts/RxTx.js"></script>
+
+</body></html>
