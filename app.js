@@ -51,8 +51,8 @@ ISODateString = function(){
       + pad(d.getUTCHours(),2,'0')+':'
       + pad(d.getUTCMinutes(),2,'0')+':'
       + pad(d.getUTCSeconds(),2,'0')+'.'
-      + pad(d.getMilliseconds(),3,'0')+'Z'
-}
+      + pad(d.getMilliseconds(),3,'0')+'Z';
+};
 
 //-------------------------------Serial communication
 // open the serial port to IMU. Change the name to the name of your port,
@@ -74,7 +74,7 @@ imuPort = new SerialPort(portImu,
   dataBits: dataImu, 
   parity: parImu, 
   stopBits: stopImu, 
-  flowControl: flowImu,
+  flowControl: flowImu
 });
 
 var txTick = 50;
