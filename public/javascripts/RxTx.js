@@ -209,7 +209,7 @@ setInterval(function()
     'RY' : joyRY
   };
   socket.emit('message', JSON.stringify(joyJSON));  
-}, 200);
+}, 100);
 
 function truncate(n) 
 {

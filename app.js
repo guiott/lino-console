@@ -56,7 +56,15 @@ ISODateString = function(){
 
 //-------------------------------Serial communication
 // open the serial port to IMU. Change the name to the name of your port,
-    portImu = "/dev/ttyS1",		// "/dev/tty.usbserial-A700ejZq", // for Mac
+// "/dev/tty.usbserial-A700ejZq" // on Mac
+// "/dev/ttyS1"					 // on Aria G25
+// "/dev/ttyO1"					 // on BeagleBone Black. 
+//		Requires before: 
+//					"cd /lib/firmware
+//					sudo echo BB-UART1 > /sys/devices/bone_capemgr.*/slots
+//					sudo echo BB-UART2 > /sys/devices/bone_capemgr.*/slots
+
+    portImu = "/dev/ttyO1",	
 	bpsImu = 19200,
 	dataImu = 8,
 	parImu = 'none',
