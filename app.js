@@ -64,12 +64,19 @@ ISODateString = function(){
 //					sudo echo BB-UART1 > /sys/devices/bone_capemgr.*/slots
 //					sudo echo BB-UART2 > /sys/devices/bone_capemgr.*/slots
 
-    portImu = "/dev/ttyO1",	
-	bpsImu = 19200,
+    portImu = "/dev/ttyO1",		
+	bpsImu = 115200,
 	dataImu = 8,
 	parImu = 'none',
 	stopImu = 1,
 	flowImu = false;
+	
+    portLls = "/dev/ttyO2",		
+	bpsLls = 19200,
+	dataLls = 8,
+	parLls = 'none',
+	stopLls = 1,
+	flowLls = false;
 	
     RxBuff = new Buffer(MAX_BUFF); // RX buffer 
     RxStatus = 0;   // index for command decoding FSM status
@@ -85,7 +92,17 @@ imuPort = new SerialPort(portImu,
   flowControl: flowImu
 });
 
-var txTick = 50;
+llsPort = new SerialPort(portLls, 
+{ 
+  parser: serialport.parsers.raw,
+  baudrate: bpsLls,
+  dataBits: dataLls, 
+  parity: parLls, 
+  stopBits: stopLls, 
+  flowControl: flowLls
+});
+
+var txTick = 25;
 
 imuPort.on('open', function()
 {
@@ -109,6 +126,16 @@ imuPort.on('open', function()
       rxTx.imuFsmOff(imuPort);
     }
 	};
+});
+
+llsPort.on('open', function()
+{
+	console.log('LLS Port open: '+portLls+
+	" bps: "+bpsLls+
+	" data bit: "+dataLls+
+	" parity: "+parLls+
+	" stop bit: "+stopLls+
+	" flow control: "+flowLls);
 });
 
 imuPort.on("data", function (data) 
