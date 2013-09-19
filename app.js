@@ -64,23 +64,23 @@ ISODateString = function(){
 //					sudo echo BB-UART1 > /sys/devices/bone_capemgr.*/slots
 //					sudo echo BB-UART2 > /sys/devices/bone_capemgr.*/slots
 
-    portImu = "/dev/ttyO1",		
-	bpsImu = 115200,
-	dataImu = 8,
-	parImu = 'none',
-	stopImu = 1,
-	flowImu = false;
-	
-    portLls = "/dev/ttyO2",		
-	bpsLls = 19200,
-	dataLls = 8,
-	parLls = 'none',
-	stopLls = 1,
-	flowLls = false;
-	
-    RxBuff = new Buffer(MAX_BUFF); // RX buffer 
-    RxStatus = 0;   // index for command decoding FSM status
-	rxErrors = 0;		// RX errors count
+portImu = "/dev/ttyO1",		
+bpsImu = 115200,
+dataImu = 8,
+parImu = 'none',
+stopImu = 1,
+flowImu = false;
+
+portLls = "/dev/ttyO2",		
+bpsLls = 115200,
+dataLls = 8,
+parLls = 'none',
+stopLls = 1,
+flowLls = false;
+
+RxBuff = new Buffer(MAX_BUFF); // RX buffer 
+RxStatus = 0;   // index for command decoding FSM status
+rxErrors = 0;		// RX errors count
 	
 imuPort = new SerialPort(portImu, 
 { 
@@ -103,6 +103,11 @@ llsPort = new SerialPort(portLls,
 });
 
 var txTick = 25;
+var imuOpenFlag = 0;
+var llsOpenFlag = 0;
+// var timeout = (MAX_BUFF * 10000.0) / bpsImu; //based on a full buffer 
+var timeout = txTick * 4;
+var WFAmax = 1000 / timeout; // to have a 1s max timeout
 
 imuPort.on('open', function()
 {
@@ -112,20 +117,8 @@ imuPort.on('open', function()
 	" parity: "+parImu+
 	" stop bit: "+stopImu+
 	" flow control: "+flowImu);
-      
-	var imuTx=setInterval(function(){imuTxTimer();},txTick);
-
-	function imuTxTimer()
-	{
-    if (DES.hPwrOff == 0)
-    {
-      rxTx.imuFsmOn(imuPort);
-    }
-    else
-    {
-      rxTx.imuFsmOff(imuPort);
-    }
-	};
+     
+  imuOpenFlag = 1;
 });
 
 llsPort.on('open', function()
@@ -136,6 +129,7 @@ llsPort.on('open', function()
 	" parity: "+parLls+
 	" stop bit: "+stopLls+
 	" flow control: "+flowLls);
+  llsOpenFlag = 1;
 });
 
 imuPort.on("data", function (data) 
@@ -145,34 +139,51 @@ imuPort.on("data", function (data)
     	RxBuff.writeUInt8(data[i],RxPtrIn);
       	//console.log(ISODateString()+"   "+RxPtrIn+"  "+RxBuff[RxPtrIn]+" "+String.fromCharCode(RxBuff[RxPtrIn])); //debug
       	if (++RxPtrIn >= MAX_BUFF) RxPtrIn=0;//restart circular queue
- 	}
+    }
+    rxTx.RxData(); // analyze received data
 });
 
 imuPort.on('error', function (data) 
 { // call back on error
-    console.log("comm error" + data);
+    console.log("IMU comm error" + data);
 });
 
-// var Timeout = (MAX_BUFF * 10000.0) / bpsImu; //based on a full buffer 
-var Timeout = txTick * 1; // % margin left on base tick
+llsPort.on('error', function (data) 
+{ // call back on error
+    console.log("LLS comm error" + data);
+});
 
 
 // =====================================idle cycle. executed on event schedule
-var imuTx=setInterval(function()
-{
-  if (RxPtrIn != RxPtrOut) rxTx.RxData();
+var imuTx=setInterval(function(){imuTxTimer();},txTick);
   
+function imuTxTimer()
+{
+  if((imuOpenFlag === 1) && (llsOpenFlag === 1) );
+  {
+    if (DES.hPwrOff === 0)
+    {
+      rxTx.portFsmOn();
+    }
+    else
+    {
+      rxTx.portFsmOff();
+    }
+  };
+  
+  if (RxPtrIn != RxPtrOut) rxTx.RxData(); // still data on buffer?
+
   if (RxStatus > 0) 
   {// a new message packet is coming, at least header received
-  	if((Date.now()-startTime) > Timeout)
-        {// if the packet is not complete within Timeout ms -> error
-          RxError(1);
-        }
-  }
+  	if((Date.now()-startTime) > timeout)
+      {// if the packet is not complete within timeout ms -> error
+        RxError(1);
+      }
+  };
   
   if (WFAflag > 0)  // cmd sent, Waiting For an Answer
   {
-    if((Date.now()-WFAtime) > Timeout) // no answer at all after request
+    if((Date.now()-WFAtime) > timeout) // no answer at all after request
     {
       WFAcount ++; // timeouts count
       WFAflag = 0;
@@ -186,8 +197,7 @@ var imuTx=setInterval(function()
   };
   
   if ((LLS.lPwrOff != 0) || DES.hPwrOff != 0) shutDownProc(); // shutdown cmd from LLS
-  
-},100);
+};
 // idle cycle. executed on event schedule=====================================
 
 //-------------------------------Web server
