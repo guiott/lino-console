@@ -117,7 +117,7 @@ imuPort.on('open', function()
 	" parity: "+parImu+
 	" stop bit: "+stopImu+
 	" flow control: "+flowImu);
-     
+   
   imuOpenFlag = 1;
 });
 
@@ -129,10 +129,22 @@ llsPort.on('open', function()
 	" parity: "+parLls+
 	" stop bit: "+stopLls+
 	" flow control: "+flowLls);
+  
   llsOpenFlag = 1;
 });
 
 imuPort.on("data", function (data) 
+{ //  fill-up the receive circular queue
+  	for (var i = 0; i < data.length; i++)
+  	{
+    	RxBuff.writeUInt8(data[i],RxPtrIn);
+      	//console.log(ISODateString()+"   "+RxPtrIn+"  "+RxBuff[RxPtrIn]+" "+String.fromCharCode(RxBuff[RxPtrIn])); //debug
+      	if (++RxPtrIn >= MAX_BUFF) RxPtrIn=0;//restart circular queue
+    }
+    rxTx.RxData(); // analyze received data
+});
+
+llsPort.on("data", function (data) 
 { //  fill-up the receive circular queue
   	for (var i = 0; i < data.length; i++)
   	{
@@ -158,45 +170,48 @@ llsPort.on('error', function (data)
 var imuTx=setInterval(function(){imuTxTimer();},txTick);
   
 function imuTxTimer()
-{
-  if((imuOpenFlag === 1) && (llsOpenFlag === 1) );
+{// every txTick ms
+  if (WFAflag === 0) // idle state 
   {
-    if (DES.hPwrOff === 0)
+    if((imuOpenFlag === 1) && (llsOpenFlag === 1) );
+    {// if ports open start TX FSM
+      if (DES.hPwrOff === 0)
+      {
+        rxTx.portFsmOn();
+      }
+      else
+      {
+        rxTx.portFsmOff();
+      }
+    };
+  }
+  else  // cmd sent, Waiting For an Answer
+  {
+    if (RxStatus === 0) 
     {
-      rxTx.portFsmOn();
+      if((Date.now()-WFAtime) > timeout) // no answer at all after request
+      {
+        WFAcount ++; // timeouts count
+        WFAflag = 0;
+        if (WFAcount > WFAmax) // too many cmds sent without any answer
+        {
+          console.log(WFAcount+" "+WFAflag);
+          RxError(8);
+        };
+      };    
     }
     else
-    {
-      rxTx.portFsmOff();
-    }
-  };
-  
-  if (RxPtrIn != RxPtrOut) rxTx.RxData(); // still data on buffer?
-
-  if (RxStatus > 0) 
-  {// a new message packet is coming, at least header received
-  	if((Date.now()-startTime) > timeout)
+    {// a new message packet is coming, at least header received
+      if((Date.now()-startTime) > timeout)
       {// if the packet is not complete within timeout ms -> error
         RxError(1);
-      }
-  };
-  
-  if (WFAflag > 0)  // cmd sent, Waiting For an Answer
-  {
-    if((Date.now()-WFAtime) > timeout) // no answer at all after request
-    {
-      WFAcount ++; // timeouts count
-      WFAflag = 0;
-      if (WFAcount > WFAmax) // too many cmds sent without any answer
-      {
-        console.log(WFAcount+" "+WFAflag);
-        WFAcount = 0;
-        RxError(8);
-      };
+      };      
     };
   };
   
-  if ((LLS.lPwrOff != 0) || DES.hPwrOff != 0) shutDownProc(); // shutdown cmd from LLS
+  if (RxPtrIn !== RxPtrOut) rxTx.RxData(); // still data on buffer?
+
+  if ((LLS.lPwrOff !== 0) || DES.hPwrOff !== 0) shutDownProc(); // shutdown cmd from LLS
 };
 // idle cycle. executed on event schedule=====================================
 
