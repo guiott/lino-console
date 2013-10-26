@@ -40,9 +40,9 @@ ISODateString = function(){
   var d = new Date();
   function pad(n, width, z) 
   {
-  	z = z || '0';
-  	n = n + '';
-  	return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    z = z || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
   }
   // function pad(n){return n<10 ? '0'+n : n}
   return d.getUTCFullYear()+'-'
@@ -56,22 +56,22 @@ ISODateString = function(){
 
 //-------------------------------Serial communication
 // open the serial port to IMU. Change the name to the name of your port,
-// "/dev/tty.usbserial-A700ejZq" // on Mac
-// "/dev/ttyS1"					 // on Aria G25
-// "/dev/ttyO1"					 // on BeagleBone Black. 
+// "/dev/tty.usbserial-A700ejZq"    // on Mac
+// "/dev/ttyS1"                     // on Aria G25
+// "/dev/ttyO1"                     // on BeagleBone Black. 
 //		Requires before: 
 //					"cd /lib/firmware
 //					sudo echo BB-UART1 > /sys/devices/bone_capemgr.*/slots
 //					sudo echo BB-UART2 > /sys/devices/bone_capemgr.*/slots
 
-portImu = "/dev/ttyO1",		
+portImu = "/dev/ttyO2",
 bpsImu = 115200,
 dataImu = 8,
 parImu = 'none',
 stopImu = 1,
 flowImu = false;
 
-portLls = "/dev/ttyO2",		
+portLls = "/dev/ttyO1",	
 bpsLls = 115200,
 dataLls = 8,
 parLls = 'none',
@@ -135,22 +135,22 @@ llsPort.on('open', function()
 
 imuPort.on("data", function (data) 
 { //  fill-up the receive circular queue
-  	for (var i = 0; i < data.length; i++)
-  	{
-    	RxBuff.writeUInt8(data[i],RxPtrIn);
-      	//console.log(ISODateString()+"   "+RxPtrIn+"  "+RxBuff[RxPtrIn]+" "+String.fromCharCode(RxBuff[RxPtrIn])); //debug
-      	if (++RxPtrIn >= MAX_BUFF) RxPtrIn=0;//restart circular queue
+    for (var i = 0; i < data.length; i++)
+    {
+        RxBuff.writeUInt8(data[i],RxPtrIn);
+        //console.log(ISODateString()+"   "+RxPtrIn+"  "+RxBuff[RxPtrIn]+" "+String.fromCharCode(RxBuff[RxPtrIn])); //debug
+        if (++RxPtrIn >= MAX_BUFF) RxPtrIn=0;//restart circular queue
     }
     rxTx.RxData(); // analyze received data
 });
 
 llsPort.on("data", function (data) 
 { //  fill-up the receive circular queue
-  	for (var i = 0; i < data.length; i++)
-  	{
-    	RxBuff.writeUInt8(data[i],RxPtrIn);
-      	//console.log(ISODateString()+"   "+RxPtrIn+"  "+RxBuff[RxPtrIn]+" "+String.fromCharCode(RxBuff[RxPtrIn])); //debug
-      	if (++RxPtrIn >= MAX_BUFF) RxPtrIn=0;//restart circular queue
+    for (var i = 0; i < data.length; i++)
+    {
+        RxBuff.writeUInt8(data[i],RxPtrIn);
+        //console.log(ISODateString()+"   "+RxPtrIn+"  "+RxBuff[RxPtrIn]+" "+String.fromCharCode(RxBuff[RxPtrIn])); //debug
+        if (++RxPtrIn >= MAX_BUFF) RxPtrIn=0;//restart circular queue
     }
     rxTx.RxData(); // analyze received data
 });
@@ -183,7 +183,7 @@ function imuTxTimer()
       {
         rxTx.portFsmOff();
       }
-    };
+    }
   }
   else  // cmd sent, Waiting For an Answer
   {
@@ -197,22 +197,22 @@ function imuTxTimer()
         {
           console.log(WFAcount+" "+WFAflag);
           RxError(8);
-        };
-      };    
+        }
+      }   
     }
     else
     {// a new message packet is coming, at least header received
       if((Date.now()-startTime) > timeout)
       {// if the packet is not complete within timeout ms -> error
         RxError(1);
-      };      
-    };
-  };
+      }    
+    }
+  }
   
   if (RxPtrIn !== RxPtrOut) rxTx.RxData(); // still data on buffer?
 
   if ((LLS.lPwrOff !== 0) || DES.hPwrOff !== 0) shutDownProc(); // shutdown cmd from LLS
-};
+}
 // idle cycle. executed on event schedule=====================================
 
 //-------------------------------Web server
@@ -233,10 +233,10 @@ io.set('log level', 1);
  
 // Add a connect listener
 io.sockets.on('connection', function(client)
-{ 	// Success!  Now listen to messages to be received
+{   // Success!  Now listen to messages to be received
 	client.on('message',function(event)
 	{ 
-    	var joy = JSON.parse(event);
+        var joy = JSON.parse(event);
       DES.vel = (joy.RY * 1.4);
       DES.yaw = (joy.RX * 1.8);
       DES.light[0] = Math.abs(joy.LY * 2.55); // ***debug: manage headlights with left joystick
@@ -249,8 +249,8 @@ io.sockets.on('connection', function(client)
 
       // debug: simulate LLS power off with joystick***
       
-    	// server to client loop back data from joysticks for test purposes
-    	//webClient.loopB(joy);  // <-  comment this  line for normal use  
+        // server to client loop back data from joysticks for test purposes
+        //webClient.loopB(joy);  // <-  comment this  line for normal use  
       webClient.TX(client);
 	});
 	

@@ -10,7 +10,7 @@ var finished = new Array(); // References to img objects which have finished dow
 var paused = false;
 var previous_time = new Date();
 var fNi = 0, msAvg = 0, fpsAvg = 0, fcnt = 0, fN = 80, msa = [], wsize = 4;
-	  
+
 function createImageLayer() {
   var img = new Image();
   img.style.position = "absolute";

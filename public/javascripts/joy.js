@@ -59,15 +59,15 @@ if(touchable) {
 
 function orientCheck()
 {
-	if (window.orientation == 0 || window.orientation == 180)
+	if (window.orientation === 0 || window.orientation === 180)
 	{
 		alert("This is optimized for landscape orientation only");
 	}	
 }
 
 function resetCanvas (e) {  
- 	// resize the canvas - but remember - this clears the canvas too. 
-/*  	canvas.width = window.innerWidth; 
+    // resize the canvas - but remember - this clears the canvas too. 
+/*  canvas.width = window.innerWidth; 
 	canvas.height = window.innerHeight;*/
 	
 	halfWidth = canvas.width/2; 
@@ -256,10 +256,10 @@ function joystick(startX, startY, movedX, movedY)
 	
 /*	
  *	Touch event (e) properties : 
- *	e.touches: 			Array of touch objects for every finger currently touching the screen
- *	e.targetTouches: 	Array of touch objects for every finger touching the screen that
+ *  e.touches:          Array of touch objects for every finger currently touching the screen
+ *	e.targetTouches:    Array of touch objects for every finger touching the screen that
  *						originally touched down on the DOM object the transmitted the event.
- *	e.changedTouches	Array of touch objects for touches that are changed for this event. 					
+ *  e.changedTouches    Array of touch objects for touches that are changed for this event.
  *						I'm not sure if this would ever be a list of more than one, but would 
  *						be bad to assume. 
  *
@@ -277,7 +277,7 @@ function joystick(startX, startY, movedX, movedY)
 
 function onTouchStart(e) 
 {//console.log("Touch START");
- 	e.preventDefault();
+    e.preventDefault();
 	
 	for(var i = 0; i<e.changedTouches.length; i++)
 	{
@@ -285,18 +285,18 @@ function onTouchStart(e)
 		if((leftTouchID<0) && (touch.clientX<halfWidth))
 		{
 			leftTouchID = touch.identifier; 
-			leftTouchStartPos.reset(touch.clientX, touch.clientY); 	
+            leftTouchStartPos.reset(touch.clientX, touch.clientY);
 			leftTouchPos.copyFrom(leftTouchStartPos); 
 			leftVector.reset(0,0); 
-			continue; 		
+            continue;
 		} 
 		else 
 		{
 			rightTouchID = touch.identifier; 
-			rightTouchStartPos.reset(touch.clientX, touch.clientY); 	
+            rightTouchStartPos.reset(touch.clientX, touch.clientY);
 			rightTouchPos.copyFrom(rightTouchStartPos); 
 			rightVector.reset(0,0); 
-			continue; 	
+            continue;
 		}	
 	}
 	
@@ -305,7 +305,7 @@ function onTouchStart(e)
  
 function onTouchMove(e) 
 {//console.log("Touch MOVE");
-	 // Prevent the browser from doing its default thing (scroll, zoom)
+    // Prevent the browser from doing its default thing (scroll, zoom)
 	e.preventDefault();
 	
 	for(var i = 0; i<e.changedTouches.length; i++)
@@ -315,13 +315,13 @@ function onTouchMove(e)
 		{
 			leftTouchPos.reset(touch.clientX, touch.clientY); 
 			leftVector.copyFrom(leftTouchPos); 
-			leftVector.minusEq(leftTouchStartPos); 	
+            leftVector.minusEq(leftTouchStartPos);
 		}	
 		else
 		{
 			rightTouchPos.reset(touch.clientX, touch.clientY); 
 			rightVector.copyFrom(rightTouchPos); 
-			rightVector.minusEq(rightTouchStartPos); 	
+            rightVector.minusEq(rightTouchStartPos);
 		}		
 	}
 	touches = e.touches; 
@@ -329,7 +329,7 @@ function onTouchMove(e)
  
 function onTouchEnd(e) 
 {//console.log("Touch END");
-   	e.preventDefault();
+    e.preventDefault();
 	
 	for(var i = 0; i<e.changedTouches.length; i++)
 	{	
@@ -343,7 +343,7 @@ function onTouchEnd(e)
 			leftTouchID = -1; 
 			leftVector.reset(0,0); 
 			
-			break; 		
+            break;
 		}	
 		else
 		{
@@ -353,7 +353,7 @@ function onTouchEnd(e)
 			rightTouchPos.y = rightDefaultY;			
 		}	
 	}	
-   	touches = e.touches; 
+    touches = e.touches; 
 }
 
 function onMouseUp(event) 

@@ -17,10 +17,10 @@
  var LON={deg:0, min:0, sec:0, dir:' '};
 
 /* dsNav values coming through UDB4
- PosXmes;  		 current X position coordinate
- PosYmes;  		 current Y position coordinate
- VelInt[4];  	 speed in mm/s as an integer for all the wheels
- ADCValue[4];	 64 sample average ADC (motor current) also for slave
+    PosXmes;    current X position coordinate
+    PosYmes;    current Y position coordinate
+    VelInt[4];  speed in mm/s as an integer for all the wheels
+    ADCValue[4];   64 sample average ADC (motor current) also for slave
  stasis_err;    number of times imu and wheels very different
  stasis_alarm;  signal too many stasis errors
 */
@@ -38,8 +38,8 @@
  var UDB4={yawAbs:0, yawRel:0, pitch:0, roll:0};
 
 /* HLS -> UDB4 -> dsNav command values to dsNav motor controller through UDB4
- VelDes; 		// mean desired speed mm/s. a value of 0X7FFF means total STOP
- YawDes; 		// desired orientation angle (set point)(Degx10 0-3599)
+    VelDes; // mean desired speed mm/s. a value of 0X7FFF means total STOP
+    YawDes; // desired orientation angle (set point)(Degx10 0-3599)
 */  
  var DES={vel:0, yaw:0, hPwrOff:0};
 
@@ -118,8 +118,8 @@ var gpsPosS=("Lat: 12° 32\' 45\" N    Lon: 42° 23\' 11\" E");
 
 setInterval(function()
 {
-  if(DES.hPwrOff == 0)
-  {
+    if(DES.hPwrOff === 0)
+    {
     gpsInfoS=("GPS: Speed " + GPS.sog +
             "cm/s  Dir " + GPS.cog +
             "°  Height " + GPS.alt +
@@ -136,7 +136,7 @@ setInterval(function()
   else
   {
     gpsInfoS=("***SHUTTING DOWN******SHUTTING DOWN***");
-  };
+  }
   
   if(GPS.lat < 0)
   {
@@ -146,7 +146,7 @@ setInterval(function()
   else
   {
     LAT.dir = 'N';
-    var tmpLat = GPS.lat;
+    tmpLat = GPS.lat;
   }
   LAT.deg = truncate(tmpLat);
   var tmpMin = tmpLat - LAT.deg;
@@ -160,7 +160,7 @@ setInterval(function()
   }
   else
   {
-    var tmpLon = GPS.lon;
+    tmpLon = GPS.lon;
     LON.dir = 'E';
   }
   LON.deg = truncate(tmpLon);
