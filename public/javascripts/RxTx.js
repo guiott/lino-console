@@ -179,7 +179,7 @@ setInterval(function()
   
   gpsPos.setValue(gpsPosS);
   gpsInfo.setValue(gpsInfoS);
-  speed.setValue(Math.abs((dsNav.velInt[0] + dsNav.velInt[1]) / 2));
+  speed.setValue(Math.abs((dsNav.velInt[0] + dsNav.velInt[1]) / 20));
   
   //console.log("-"+((dsNav.velInt[0] + dsNav.velInt[1]) / 2)+"-");
   
@@ -190,12 +190,12 @@ setInterval(function()
   RLMotorC.setValue(dsNav.ADCValue[2]);
   FRMotorC.setValue(dsNav.ADCValue[1]);
   RRMotorC.setValue(dsNav.ADCValue[3]);
-  FLMotorS.setValue(dsNav.velInt[0]);
-  RLMotorS.setValue(dsNav.velInt[2]);
-  FRMotorS.setValue(dsNav.velInt[1]);
-  RRMotorS.setValue(dsNav.velInt[3]);
+  FLMotorS.setValue(dsNav.velInt[1]/10);
+  RLMotorS.setValue(dsNav.velInt[3]/10);
+  FRMotorS.setValue(dsNav.velInt[0]/10);
+  RRMotorS.setValue(dsNav.velInt[2]/10);
   horizon1.setPitch(UDB4.pitch);
-  horizon1.setRoll(UDB4.roll);
+  horizon1.setRoll(-UDB4.roll);
   thermoL.setValue(LLS.temp[0]);
   thermoR.setValue(LLS.temp[1]);
   batteryL.setValue(LLS.batV[0]);

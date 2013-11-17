@@ -65,7 +65,7 @@ ISODateString = function(){
 //					sudo echo BB-UART2 > /sys/devices/bone_capemgr.*/slots
 
 portImu = "/dev/ttyO2",
-bpsImu = 115200,
+bpsImu = 57600,
 dataImu = 8,
 parImu = 'none',
 stopImu = 1,
@@ -107,7 +107,7 @@ var imuOpenFlag = 0;
 var llsOpenFlag = 0;
 // var timeout = (MAX_BUFF * 10000.0) / bpsImu; //based on a full buffer 
 var timeout = txTick * 4;
-var WFAmax = 1000 / timeout; // to have a 1s max timeout
+var WFAmax = 5000 / timeout; // to have a 5s max timeout
 
 imuPort.on('open', function()
 {
@@ -237,9 +237,11 @@ io.sockets.on('connection', function(client)
 	client.on('message',function(event)
 	{ 
         var joy = JSON.parse(event);
-      DES.vel = (joy.RY * 1.4);
-      DES.yaw = (joy.RX * 1.8);
+      DES.vel = (joy.RY * 14);		// desired speed in mm/s
+      DES.yaw = (joy.RX * 18);
       DES.light[0] = Math.abs(joy.LY * 2.55); // ***debug: manage headlights with left joystick
+      DES.light[1]=DES.light[0];
+      // console.log("Vel: "+DES.vel+"  Yaw: "+DES.yaw+"  Light: "+DES.light[0]);	//debug
       
       // ***debug: simulate LLS power off with joystick
       if (joy.LX > 95)
