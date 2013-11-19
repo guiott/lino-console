@@ -236,9 +236,17 @@ io.sockets.on('connection', function(client)
 {   // Success!  Now listen to messages to be received
 	client.on('message',function(event)
 	{ 
-        var joy = JSON.parse(event);
-      DES.vel = (joy.RY * 14);		// desired speed in mm/s
+      var joy = JSON.parse(event);
+      if ((joy.RX === 0) && (joy.RY === 0))
+      {// if joystick is at 0,0 position...
+      	DES.vel = 0x7FFF;	// ...all motors stopped
+      }
+      else
+      {
+      	DES.vel = (joy.RY * 14);		// desired speed in mm/s
+      }
       DES.yaw = (joy.RX * 18);
+
       DES.light[0] = Math.abs(joy.LY * 2.55); // ***debug: manage headlights with left joystick
       DES.light[1]=DES.light[0];
       // console.log("Vel: "+DES.vel+"  Yaw: "+DES.yaw+"  Light: "+DES.light[0]);	//debug
