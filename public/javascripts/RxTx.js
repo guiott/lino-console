@@ -48,9 +48,14 @@
  Temp[]	Left and Right skulls temperature
 */
  var LLS={batV:[0,0], temp:[0,0]};
+ 
+ /* values coming from web GUI
+ sliderVal	Headlight slider control
+ switchVal  On/Off switch
+*/
+ GUI={sliderVal:0, switchVal:true};
 
 // ============================================================================
-
 
 // open a connection to the server:
 var socket = io.connect('http://' + location.hostname + ':3000');
@@ -200,13 +205,16 @@ setInterval(function()
   thermoR.setValue(LLS.temp[1]);
   batteryL.setValue(LLS.batV[0]);
   batteryR.setValue(LLS.batV[1]);
-  
   var joyJSON =
   {
+    /*
     'LX' : joyLX,
     'LY' : joyLY,
+    */
     'RX' : joyRX,
-    'RY' : joyRY
+    'RY' : joyRY,
+    'SW' : GUI.switchVal,
+    'SL' : GUI.sliderVal
   };
   socket.emit('message', JSON.stringify(joyJSON));  
 }, 100);

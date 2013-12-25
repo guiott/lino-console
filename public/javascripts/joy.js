@@ -88,7 +88,7 @@ function draw()
 {
 	var posX, posY;
 	c.clearRect(0,0,canvas.width, canvas.height); 
-	
+
 	if(touchable) 
 	{
 		if (touches.length > 0)
@@ -120,7 +120,7 @@ function draw()
 	}
 	else 
 	{
-		joystick(leftDefaultX, leftDefaultY, mouseJoyLX, mouseJoyLY);
+		//joystick(leftDefaultX, leftDefaultY, mouseJoyLX, mouseJoyLY);
 		joystick(rightDefaultX, rightDefaultY, mouseJoyRX, mouseJoyRY);	
 	}
 }

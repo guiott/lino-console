@@ -9,12 +9,15 @@
 
     <title>Lino Console</title>
     <link rel="stylesheet" href="stylesheets/main.css" type="text/css" />
+    <link rel="stylesheet" href="stylesheets/Switch.css" type="text/css" />
+	<link rel="stylesheet" href="stylesheets/Slider.css" type="text/css" />
+    
 </head>
 <body onload="init();">
    
 <div id="divFrame"><canvas id="canvasFrame" width="1070" height="700"></canvas>
 
-  <div id=divStream style="background-image: url(../images/StreamFrame.png); width: 649px; height: 488px;">
+  <div id=divStream style="background-image: url(images/StreamFrame.png); width: 649px; height: 488px;">
     <table>
     <tbody>
   			<tr>
@@ -106,11 +109,79 @@
       
   </div>
 
+<script>
+    function updateSwitch(switchStatus) 
+    {
+    	if(!switchStatus)
+    	{
+    		var r=confirm("ARE YOU SURE YOU WANT TO" + "\n" +"  SWITCH THE POWER OFF?");
+			if (r)
+			{
+				GUI.switchVal = switchStatus;
+				rangeInput.value=0;
+				rangevalue.value=0;
+			}
+			else
+			{
+				switch1.checked = true;
+			}
+    	}
+	}
+</script>
 
-      
+<div>
+<span id=divSwitch class="switch">
+<canvas id="canvasSwitch" width="0" height="50"></canvas>
+	<span class="switch-border1">
+		<span class="switch-border2">
+			<input id="switch1" type="checkbox" checked onchange="updateSwitch(this.checked)"/>
+			<label for="switch1"></label>
+			<span class="switch-top"></span>
+			<span class="switch-shadow"></span>
+			<span class="switch-handle"></span>
+			<span class="switch-handle-left"></span>
+			<span class="switch-handle-right"></span>
+			<span class="switch-handle-top"></span>
+			<span class="switch-handle-bottom"></span>
+			<span class="switch-handle-base"></span>
+			<span class="switch-led switch-led-green">
+				<span class="switch-led-border">
+					<span class="switch-led-light">
+						<span class="switch-led-glow"></span>
+					</span>
+				</span>
+			</span>
+<!--		<span class="switch-led switch-led-red">
+				<span class="switch-led-border">
+					<span class="switch-led-light">
+						<span class="switch-led-glow"></span>
+					</span>
+				</span>
+			</span>
+-->
+		</span>
+	</span>
+</span>
 </div>
-          
+    
+<script>
+    function updateSlider(sliderAmount) 
+    {
+    	GUI.sliderVal = sliderAmount;
+		rangevalue.value=GUI.sliderVal;    
+	}
+</script>
 
+<div> 
+<span id=divSlider class="rotate90">
+	<canvas id="canvasSlider" width="250" height="50"></canvas>
+	<br>
+	Headlights       
+	<output id="rangevalue">0</output>
+	<input type="range" id="rangeInput" value="0" onchange="updateSlider(this.value)" />
+</span>        
+
+	
 <script src="javascripts/tween-min.js"></script>
 <script src="javascripts/steelseries-min.js"></script>
 <script src="javascripts/gauges.js"></script>

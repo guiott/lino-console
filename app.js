@@ -236,23 +236,22 @@ io.sockets.on('connection', function(client)
 {   // Success!  Now listen to messages to be received
 	client.on('message',function(event)
 	{ 
-      var joy = JSON.parse(event);
-      if ((joy.RX === 0) && (joy.RY === 0))
+      var GUI = JSON.parse(event);
+      if ((GUI.RX === 0) && (GUI.RY === 0))
       {// if joystick is at 0,0 position...
-      	DES.vel = 0x7FFF;	// ...all motors stopped
+        DES.vel = 0x7FFF;	// ...all motors stopped
       }
       else
       {
-      	DES.vel = (joy.RY * 14);		// desired speed in mm/s
+        DES.vel = (GUI.RY * 14);		// desired speed in mm/s
       }
-      DES.yaw = (joy.RX * 18);
+      DES.yaw = (GUI.RX * 18);
 
-      DES.light[0] = Math.abs(joy.LY * 2.55); // ***debug: manage headlights with left joystick
+      DES.light[0] = Math.round(GUI.SL * 2.55); // Slider light control
       DES.light[1]=DES.light[0];
       // console.log("Vel: "+DES.vel+"  Yaw: "+DES.yaw+"  Light: "+DES.light[0]);	//debug
-      
-      // ***debug: simulate LLS power off with joystick
-      if (joy.LX > 95)
+      // LLS power off with GUI switch
+      if (!GUI.SW)
       {
         DES.hPwrOff = 1; 
       }
@@ -260,7 +259,7 @@ io.sockets.on('connection', function(client)
       // debug: simulate LLS power off with joystick***
       
         // server to client loop back data from joysticks for test purposes
-        //webClient.loopB(joy);  // <-  comment this  line for normal use  
+        //webClient.loopB(GUI);  // <-  comment this  line for normal use  
       webClient.TX(client);
 	});
 	
