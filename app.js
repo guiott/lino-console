@@ -245,7 +245,9 @@ io.sockets.on('connection', function(client)
       {
         DES.vel = (GUI.RY * 14);		// desired speed in mm/s
       }
-      DES.yaw = (GUI.RX * 18);
+      // desired direction in degrees
+      // DES.yaw = (GUI.RX * 18);	// absolute direction: the position of the joy = orientation
+      DES.yaw = ((GUI.RX * 18) + UDB4.yawDeg); // relative direction: joy = turn "X" degrees from current direction
 
       DES.light[0] = Math.round(GUI.SL * 2.55); // Slider light control
       DES.light[1]=DES.light[0];

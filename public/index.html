@@ -15,8 +15,9 @@
 </head>
 <body onload="init();">
    
-<div id="divFrame"><canvas id="canvasFrame" width="1070" height="700"></canvas>
-
+<div id="divFrame"><img src="images/BlackPanel.jpg" id="foreground"/>
+    <canvas id="canvasFrame" width="1070" height="700"></canvas>
+    
   <div id=divStream style="background-image: url(images/StreamFrame.png); width: 649px; height: 488px;">
     <table>
     <tbody>
@@ -126,6 +127,15 @@
 				switch1.checked = true;
 			}
     	}
+    	
+    	if(switch1.checked)
+    	{
+			document.getElementById("foreground").className = "foreground-out";
+    	}
+    	else
+    	{
+			document.getElementById("foreground").className = "foreground-in";
+    	}
 	}
 </script>
 
@@ -162,6 +172,7 @@
 		</span>
 	</span>
 </span>
+
 </div>
     
 <script>

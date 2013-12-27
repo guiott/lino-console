@@ -1,5 +1,5 @@
  var canvas,
- 	c;
+    c;
 		
 var mouseX, mouseY, 
 	// is this running in a touch capable environment?
@@ -106,7 +106,7 @@ function draw()
 				c.lineWidth = "6";
 				c.arc(touch.clientX, touch.clientY, 40, 0, Math.PI*2, true); 
 				c.stroke();*/
-				joystick(leftTouchStartPos.x, leftTouchStartPos.y, leftTouchPos.x, leftTouchPos.y);
+				//joystick(leftTouchStartPos.x, leftTouchStartPos.y, leftTouchPos.x, leftTouchPos.y);
 				joystick(rightTouchStartPos.x, rightTouchStartPos.y, rightTouchPos.x, rightTouchPos.y);
 				/*posX = touch.clientX;
 				posY = touch.clientY;*/
@@ -114,7 +114,7 @@ function draw()
 		} 
 		else 
 		{
-			joystick(leftDefaultX, leftDefaultY, leftDefaultX, leftDefaultY);
+			//joystick(leftDefaultX, leftDefaultY, leftDefaultX, leftDefaultY);
 			joystick(rightDefaultX, rightDefaultY, rightDefaultX, rightDefaultY);
 		}
 	}

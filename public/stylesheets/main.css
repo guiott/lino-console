@@ -13,9 +13,43 @@
 	height: 700px;
 	width: 1070px;
 	background-image: url(../images/BckgWood.jpg);
-  /*background-image: url(../images/BckgMetal.jpg);*/
 	z-index: 10;
+	
+  /*  -webkit-transition: opacity 1s ease-in;
+    -moz-transition: opacity 1s ease-in;
+    -o-transition: opacity 1s ease-in;
+  */
 }
+/*#divFrame.fade-out
+{
+	opacity:0.5;
+}
+#divFrame.fade-in
+{
+	opacity:1;
+}
+*/
+
+#foreground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index:100;
+    opacity:0;
+    pointer-events: none;
+    -webkit-transition: opacity 1s ease-in;
+    -moz-transition: opacity 1s ease-in;
+    -o-transition: opacity 1s ease-in;
+}
+#foreground.foreground-out
+{
+	opacity:0;
+}
+#foreground.foreground-in
+{
+	opacity:0.6;
+}
+        
 #divCompass1 {
 	position: absolute;
 	left: 340px;
@@ -142,6 +176,7 @@
 	font-weight: bold; 
 	color: #666; 
 }
+
 /*
 #joyCanvasL {
 	position: absolute;
