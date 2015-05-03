@@ -40,25 +40,29 @@
 /* HLS -> UDB4 -> dsNav command values to dsNav motor controller through UDB4
     VelDes; // mean desired speed mm/s. a value of 0X7FFF means total STOP
     YawDes; // desired orientation angle (set point)(Degx10 0-3599)
+    hPwrOff;// switch off command
+
 */  
  var DES={vel:0, yaw:0, hPwrOff:0};
 
 /* values coming from Low Level Supervisor
  BatV[]	Left and Right battery voltage level
- Temp[]	Left and Right skulls temperature
+ Temp[]	Left and Right hulls temperature
 */
  var LLS={batV:[0,0], temp:[0,0]};
  
  /* values coming from web GUI
  sliderVal	Headlight slider control
  switchVal  On/Off switch
+ OrientFlag change the dsNav orientation mode (direct or PID)
+
 */
- GUI={sliderVal:0, switchVal:true};
+ GUI={sliderVal:0, switchVal:true, OrientFlag:0};
 
 // ============================================================================
 
 // open a connection to the server:
-var socket = io.connect('http://' + location.hostname + ':3000');
+var socket = io.connect('http://' + location.host);
 
 socket.on('loopBackEvent', function (data) 
 {
@@ -214,9 +218,10 @@ setInterval(function()
     'RX' : joyRX,
     'RY' : joyRY,
     'SW' : GUI.switchVal,
-    'SL' : GUI.sliderVal
+    'SL' : GUI.sliderVal,
+    'OF' : GUI.OrientFlag
   };
-  socket.emit('message', JSON.stringify(joyJSON));  
+  socket.emit('message', JSON.stringify(joyJSON));
 }, 100);
 
 function truncate(n) 

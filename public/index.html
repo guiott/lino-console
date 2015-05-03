@@ -179,7 +179,10 @@
     function updateSlider(sliderAmount) 
     {
     	GUI.sliderVal = sliderAmount;
-		rangevalue.value=GUI.sliderVal;    
+		rangevalue.value=GUI.sliderVal;
+		
+    	// select the orientation mode of dsNav (direct or PID). It could be assigned to a switch
+    	GUI.OrientFlag=0; // drive the steering directly
 	}
 </script>
 
@@ -199,7 +202,6 @@
 <script src="javascripts/video.js"></script>
 <script src="javascripts/Vector2.js"></script>
 <script src="socket.io/socket.io.js"></script>
-
 <script src="javascripts/joy.js"></script>
 <!--<script src="javascripts/demo.js"></script>-->
 <script src="javascripts/RxTx.js"></script>

@@ -1,41 +1,197 @@
 //-------------------------------Server init
-   
-var express = require('express'),
-    routes = require('./routes'),
-    user = require('./routes/user'),
-    http = require('http'),
-    path = require('path'),
-    rxTx = require('rxTx.js'),
-    webClient = require('webClient.js'),
-    events = require('events');
+ 
+var express = require('express');
+var path = require('path');
+//var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var rxTx = require('rxTx.js');
+var webClient = require('webClient.js');
+var events = require('events');
+    
+var routes = require('./routes/index');
+var users = require('./routes/users');
 
 serialport = require("serialport");	// include the serialport library
 SerialPort = serialport.SerialPort; // make a local instance of serial
 
 var app = express();
 
-var server = require('http').createServer(app),
-  io = require('socket.io').listen(server);
-  
-// all environments
-app.set('port', process.env.PORT || 3000);
-app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
-app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(express.bodyParser());
-app.use(express.methodOverride());
-app.use(app.router);
-app.use(express.static(path.join(__dirname, '/public')));
+/* ========Copied from bin/www. required if you want to use the old method without www
+ * uncomment this
+ * delete www
+ * launch with "node app.js instead of npm start
+http://stackoverflow.com/questions/24609991/using-socket-io-in-express-4-and-express-generators-bin-www
+ * Normalize a port into a number, string, or false.
+*/
+function normalizePort(val) {
+  var port = parseInt(val, 10);
 
-// development only
-// if ('development' == app.get('env')) {
-//   app.use(express.errorHandler());
-// }
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+var port = normalizePort(process.env.PORT || '3333');
+app.set('port', port);
+/*========Copied from bin/www. required if you want to use the old method without www */
+
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+/*app.get('/', function(req, res){
+  res.sendfile('index.html');
+});
+*/
+
+server.listen(app.get('port'), function(){
+  console.log('Express server listening on port ' + app.get('port'));
+});
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', routes);
+app.use('/users', users);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
+
+module.exports = app;
 
 upTime = Date.now();
 
-/*-----------------------------------------------------------------------------*/
+//-------------------------------Websocket
+// Add a connect listener
+io.sockets.on('connection', function(client)
+{   // Success!  Now listen to messages to be received
+	client.on('message',function(event)
+	{ 
+	  // console.log("socket"); //debug
+      var GUI = JSON.parse(event);
+      
+      if ((GUI.RX === 0) && (GUI.RY === 0))
+      {// if joystick is at 0,0 position...
+        DES.vel = 0x7FFF;	// ...all motors stopped
+      }
+      else
+      {
+        DES.vel = (GUI.RY * 14);		// desired speed in mm/s
+      }
+      
+      if(GUI.OF)
+      {
+      	DES.OrientFlag = 1;
+      }
+      else
+      {
+      	DES.OrientFlag = 0;
+      }
+      
+      if(DES.OrientFlag)
+      {
+		  // This part is used to drive the robot by the desired orientation (using Orientation PID on dsNav)
+		  // desired direction in degrees
+		  var TmpYaw = -(GUI.RX * 18);	// absolute direction: the position of the joy = orientation in 0-3599 range
+	  
+		  // var TmpYaw = (UDB4.yawDeg + (GUI.RX * 18)); // relative direction: joy = turn "X" degrees from current direction in 0-3599 range
+		  if(TmpYaw < 0)
+		  {
+			DES.yaw = (TmpYaw + 3600) % 3600;
+		  }
+		  else
+		  {
+			DES.yaw = TmpYaw % 3600;
+		  }
+      }
+      else
+      {      
+		  /* Direct driving dsNav by the joystick position. 
+			 The joystick ranges from -100 to +100
+			 By the multiplier you set the max speed difference between the two wheels for differential steering
+			 It requires the usage of DirectDrive() function in dsPID4W.c instead of Orientation()
+		  */
+		  DES.yaw = GUI.RX * 3;  
+      }
+      
+      /*
+      if(GUI.RX !== 0)
+      {
+		   console.log("Joy: "+(GUI.RX)+" Mes: "+ UDB4.yawDeg +" Des:"+DES.yaw); //debug
+      }
+      */
+      
+      DES.light[0] = Math.round(GUI.SL * 2.55); // Slider light control
+      DES.light[1]=DES.light[0];
+      // console.log("Vel: "+DES.vel+"  Yaw: "+DES.yaw+"  Light: "+DES.light[0]);	//debug
+      // LLS power off with GUI switch
+      if (!GUI.SW)
+      {
+        DES.hPwrOff = 1; 
+      }
+      
+    	// server to client loop back data from joysticks for test purposes
+    	//webClient.loopB(GUI);  // <-  comment this  line for normal use  
+    	webClient.TX(client);
+	});
+	
+	client.on('disconnect',function()
+	{
+		//console.log('Server has disconnected');
+	});
+});
+
+server.listen(port, function(){
+  console.log('listening on *:' + port);
+});
+
+//-------------------------------Date
 ISODateString = function(){
   var d = new Date();
   function pad(n, width, z) 
@@ -157,14 +313,13 @@ llsPort.on("data", function (data)
 
 imuPort.on('error', function (data) 
 { // call back on error
-    console.log("IMU comm error" + data);
+ //   console.log("IMU comm error" + data);
 });
 
 llsPort.on('error', function (data) 
 { // call back on error
-    console.log("LLS comm error" + data);
+//    console.log("LLS comm error" + data);
 });
-
 
 // =====================================idle cycle. executed on event schedule
 var imuTx=setInterval(function(){imuTxTimer();},txTick);
@@ -214,59 +369,3 @@ function imuTxTimer()
   if ((LLS.lPwrOff !== 0) || DES.hPwrOff !== 0) shutDownProc(); // shutdown cmd from LLS
 }
 // idle cycle. executed on event schedule=====================================
-
-//-------------------------------Web server
-// respond to web GET requests with the index.html page:
-app.get('/', function (request, response) 
-{
-  response.sendfile(__dirname + '/public/index.html');
-});
-
-//start express server
-server.listen(app.get('port'), function()
-{
-   console.log("Express server listening on port " + app.get('port'));
-});
-
-//remove debug out for socket.io 
-io.set('log level', 1);
- 
-// Add a connect listener
-io.sockets.on('connection', function(client)
-{   // Success!  Now listen to messages to be received
-	client.on('message',function(event)
-	{ 
-      var GUI = JSON.parse(event);
-      if ((GUI.RX === 0) && (GUI.RY === 0))
-      {// if joystick is at 0,0 position...
-        DES.vel = 0x7FFF;	// ...all motors stopped
-      }
-      else
-      {
-        DES.vel = (GUI.RY * 14);		// desired speed in mm/s
-      }
-      // desired direction in degrees
-      // DES.yaw = (GUI.RX * 18);	// absolute direction: the position of the joy = orientation
-      DES.yaw = ((GUI.RX * 18) + UDB4.yawDeg); // relative direction: joy = turn "X" degrees from current direction
-
-      DES.light[0] = Math.round(GUI.SL * 2.55); // Slider light control
-      DES.light[1]=DES.light[0];
-      // console.log("Vel: "+DES.vel+"  Yaw: "+DES.yaw+"  Light: "+DES.light[0]);	//debug
-      // LLS power off with GUI switch
-      if (!GUI.SW)
-      {
-        DES.hPwrOff = 1; 
-      }
-
-      // debug: simulate LLS power off with joystick***
-      
-        // server to client loop back data from joysticks for test purposes
-        //webClient.loopB(GUI);  // <-  comment this  line for normal use  
-      webClient.TX(client);
-	});
-	
-	client.on('disconnect',function()
-	{
-		//console.log('Server has disconnected');
-	});
-});
