@@ -17,8 +17,8 @@ var	halfWidth,
 	rightVector = new Vector2(0,0); 
 	leftDefaultX = 125,
 	leftDefaultY = 370,
-	rightDefaultX = 947,
-	rightDefaultY = 370;
+	rightDefaultX = 950,
+	rightDefaultY = 360;
 	
 var mouseJoyLX = leftDefaultX,
 	mouseJoyLY = leftDefaultY,
@@ -82,6 +82,9 @@ function resetCanvas (e) {
 	initGauges();
 	createImageLayer();
 	orientCheck();
+	// select the orientation mode of dsNav (direct or PID). It could be assigned to a switch
+    GUI.OrientFlag=0; // drive the steering directly
+	updateSliderSpeed(Math.floor(GUI.RangeSpeed * 100));
 }
 
 function draw() 
@@ -196,7 +199,7 @@ function joystick(startX, startY, movedX, movedY)
 	else
 	{
 		joyRX = stickX;
-		joyRY = -stickY;			
+		joyRY = -stickY;		
 	}
 
 	var tri1X = movedX-(Math.cos(stickAngle)*triWidth);

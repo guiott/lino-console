@@ -180,9 +180,6 @@
     {
     	GUI.sliderVal = sliderAmount;
 		rangevalue.value=GUI.sliderVal;
-		
-    	// select the orientation mode of dsNav (direct or PID). It could be assigned to a switch
-    	GUI.OrientFlag=0; // drive the steering directly
 	}
 </script>
 
@@ -193,8 +190,28 @@
 	Headlights       
 	<output id="rangevalue">0</output>
 	<input type="range" id="rangeInput" value="0" onchange="updateSlider(this.value)" />
-</span>        
+</span>  
+</div>
 
+<script>
+    function updateSliderSpeed(sliderAmount) 
+    {
+    	GUI.RangeSpeed = sliderAmount / 100;
+		rangevalueSpeed.value = Math.floor(GUI.RangeSpeed * 100);
+	}
+</script>
+
+<div>
+<span id=divSliderSpeed class="rotate90">
+	<canvas id="canvasSliderSpeed" width="100" height="50"></canvas>
+	<br>
+	Speed Range       
+	<output id="rangevalueSpeed"></output>
+	%
+	<input type="range" id="rangeInputSpeed" value="50" step="10" onchange="updateSliderSpeed(this.value)" />
+	
+</span>        
+</div>
 	
 <script src="javascripts/tween-min.js"></script>
 <script src="javascripts/steelseries-min.js"></script>

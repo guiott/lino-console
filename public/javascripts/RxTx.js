@@ -57,7 +57,7 @@
  OrientFlag change the dsNav orientation mode (direct or PID)
 
 */
- GUI={sliderVal:0, switchVal:true, OrientFlag:0};
+ GUI={sliderVal:0, switchVal:true, OrientFlag:0, RangeSpeed:0.5};
 
 // ============================================================================
 
@@ -216,7 +216,7 @@ setInterval(function()
     'LY' : joyLY,
     */
     'RX' : joyRX,
-    'RY' : joyRY,
+    'RY' : joyRY * GUI.RangeSpeed,
     'SW' : GUI.switchVal,
     'SL' : GUI.sliderVal,
     'OF' : GUI.OrientFlag

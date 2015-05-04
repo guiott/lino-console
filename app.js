@@ -124,7 +124,7 @@ io.sockets.on('connection', function(client)
       {
         DES.vel = (GUI.RY * 14);		// desired speed in mm/s
       }
-      
+            
       if(GUI.OF)
       {
       	DES.OrientFlag = 1;
