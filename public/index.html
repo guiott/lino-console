@@ -139,6 +139,32 @@
 	}
 </script>
 
+<script>
+    function Sonar() 
+    {
+        var button = document.getElementById("SonarButton");
+		if(button.innerText==="Sonar OFF")
+		{
+			document.getElementById("divGraph").className = "divGraph-out";
+    		document.getElementById("SonarButton").style.color = "red";
+    		button.innerText = "Sonar  ON";
+		}
+    	else
+    	{
+    		document.getElementById("divGraph").className = "divGraph-in";
+    		document.getElementById("SonarButton").style.color = "white";
+    		button.innerText = "Sonar OFF";
+    	}
+	}
+</script>
+
+<div>
+<span id=divSonar>
+<canvas id="divSonar" width="0" height="50"></canvas>
+	<button id="SonarButton" style="background:grey; color:red" onclick="Sonar()">Sonar  ON</button>
+</span>
+</div>
+
 <div>
 <span id=divSwitch class="switch">
 <canvas id="canvasSwitch" width="0" height="50"></canvas>
@@ -212,7 +238,50 @@
 	
 </span>        
 </div>
-	
+
+<script src="javascripts/html5-canvas-bar-graph.js"></script>
+
+<div id="graphDiv1" style="visibility:hidden;">
+<span id=divGraph>
+<canvas id="canvasdivGraph" width="100" height="100"></canvas>
+	<script>(function () 
+	{
+		function createCanvas(divName) 
+		{
+			var ctx = canvasdivGraph.getContext("2d");
+			return ctx;
+		}
+		
+		var ctx = createCanvas("graphDiv1");
+		
+		var graph = new BarGraph(ctx);
+		graph.maxValue = 255;
+		graph.margin = 0;
+		graph.width = 640;
+		graph.height = 480;
+		graph.backgroundColor = "#C8B394";
+		//graph.colors = ["#00DD3F", "#28AF16", "#E6604A", "#F5AF24", "#C6DD44", "#A4AF63", "#4462C8"];
+		//graph.colors = ["#FFFF00", "#00FF00", "#0000FF", "#FF0000", "#0000FF", "#00FF00", "#FFFF00"]; // 7 beams
+		//graph.xAxisLabelArr = ["LL -52\xB0", "LC -27\xB0", "CL -12\xB0", "CC 0\xB0", "CR 12\xB0", "RC 27\xB0", "RR 52\xB0"]; // 7 beams
+		//graph.colors = ["#00FF00", "#FF0000", "#FFFF00", "#0000FF"]; // 4 beams
+		graph.colors = ["rgba(0,255,0,0.2)", "rgba(0255,0,0,0.2)",  "rgba(255,255,0,0.2)", "rgba(0,0,255,0.2)"]; // 4 beams
+		graph.colorsLabel = ["rgba(0,255,0,1)", "rgba(0255,0,0,1)",  "rgba(255,255,0,1)", "rgba(0,0,255,1)"]; // 4 beams
+		graph.xAxisLabelArr = ["LL -40\xB0", "LC -15\xB0", "CR 15\xB0", "RR 40\xB0"]; // 4 beams
+		
+		setInterval(function () {
+		//graph.update([Math.random() * 255, Math.random() * 255, Math.random() * 255, Math.random() * 255, Math.random() * 255, Math.random() * 255, Math.random() * 255]); //test
+		// graph.update([LLS.obst[0],LLS.obst[1],LLS.obst[2],LLS.obst[3],LLS.obst[4],LLS.obst[5],LLS.obst[6]]); // 7 beams
+		// graph.update([Math.random() * 255, Math.random() * 255, Math.random() * 255, Math.random() * 255]); //test 4 beam
+		// graph.update([255, 255, 255, 255]); //test 4 beam
+		graph.update([LLS.obst[7],LLS.obst[8],LLS.obst[9],LLS.obst[10]]); // 4 beams
+
+		}, 500);
+
+	}());
+	</script>
+</span>
+</div>
+		
 <script src="javascripts/tween-min.js"></script>
 <script src="javascripts/steelseries-min.js"></script>
 <script src="javascripts/gauges.js"></script>

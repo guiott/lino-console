@@ -49,12 +49,11 @@
  BatV[]	Left and Right battery voltage level
  Temp[]	Left and Right hulls temperature
 */
- var LLS={batV:[0,0], temp:[0,0]};
+ var LLS={batV:[0,0], temp:[0,0], obst:[255,255,255,255,255,255,255,255,255,255,255]};
  
  /* values coming from web GUI
  sliderVal	Headlight slider control
  switchVal  On/Off switch
- OrientFlag change the dsNav orientation mode (direct or PID)
 
 */
  GUI={sliderVal:0, switchVal:true, OrientFlag:0, RangeSpeed:0.5};
@@ -114,6 +113,7 @@ socket.on('RxEvent', function (data)
   LLS.batV=RX.batV;
   LLS.temp=RX.temp;
   DES.hPwrOff=RX.hPwrOff;
+  LLS.obst=RX.obstacle;
 });  
 
 var odoValue = 0;
