@@ -222,6 +222,7 @@ setInterval(function()
     'OF' : GUI.OrientFlag
   };
   socket.emit('message', JSON.stringify(joyJSON));
+  GUI.switchVal=true; // reset to avoid switch off at the next run if browser remain open
 }, 100);
 
 function truncate(n) 

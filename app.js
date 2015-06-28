@@ -366,6 +366,6 @@ function imuTxTimer()
   
   if (RxPtrIn !== RxPtrOut) rxTx.RxData(); // still data on buffer?
 
-  if ((LLS.lPwrOff !== 0) || DES.hPwrOff !== 0) shutDownProc(); // shutdown cmd from LLS
+  if ((LLS.lPwrOff !== 0) || (DES.hPwrOff !== 0)) shutDownProc(); // shutdown cmd from LLS
 }
 // idle cycle. executed on event schedule=====================================
