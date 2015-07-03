@@ -40,8 +40,6 @@
 /* HLS -> UDB4 -> dsNav command values to dsNav motor controller through UDB4
     VelDes; // mean desired speed mm/s. a value of 0X7FFF means total STOP
     YawDes; // desired orientation angle (set point)(Degx10 0-3599)
-    hPwrOff;// switch off command
-
 */  
  var DES={vel:0, yaw:0, hPwrOff:0};
 
@@ -49,15 +47,15 @@
  BatV[]	Left and Right battery voltage level
  Temp[]	Left and Right hulls temperature
 */
- var LLS={batV:[0,0], temp:[0,0], obst:[255,255,255,255,255,255,255,255,255,255,255]};
+ var LLS={batV:[0,0], temp:[0,0], lPwrOff:0, obst:[255,255,255,255,255,255,255,255,255,255,255]};
  
  /* values coming from web GUI
  sliderVal	Headlight slider control
  switchVal  On/Off switch
-
+  OrientFlag change the dsNav orientation mode (direct or PID)
 */
  GUI={sliderVal:0, switchVal:true, OrientFlag:0, RangeSpeed:0.5};
-
+ 
 // ============================================================================
 
 // open a connection to the server:
@@ -112,6 +110,7 @@ socket.on('RxEvent', function (data)
   UDB4.roll=RX.roll;
   LLS.batV=RX.batV;
   LLS.temp=RX.temp;
+  LLS.lPwrOff=RX.lPwrOff;
   DES.hPwrOff=RX.hPwrOff;
   LLS.obst=RX.obstacle;
 });  
@@ -127,9 +126,17 @@ var gpsPosS=("Lat: 12° 32\' 45\" N    Lon: 42° 23\' 11\" E");
 
 setInterval(function()
 {
-    if(DES.hPwrOff === 0)
+    if(DES.hPwrOff !== 0)
     {
-    gpsInfoS=("GPS: Speed " + GPS.sog +
+      gpsInfoS=("***SOFTWARE SHUT DOWN***SOFTWARE SHUT DOWN***");
+    }
+    else if(LLS.lPwrOff !== 0) 
+    {
+      gpsInfoS=("***HARDWARE SHUT DOWN***HARDWARE SHUT DOWN***");
+    }
+    else
+    {
+      gpsInfoS=("GPS: Speed " + GPS.sog +
             "cm/s  Dir " + GPS.cog +
             "°  Height " + GPS.alt +
             "m  HDOP " + GPS.hdop +
@@ -141,11 +148,7 @@ setInterval(function()
             " UTC " +  GPS.hour +
             ":" + GPS.min +
             ":" + GPS.sec);
-  }
-  else
-  {
-    gpsInfoS=("***SHUTTING DOWN******SHUTTING DOWN***");
-  }
+    }
   
   if(GPS.lat < 0)
   {
@@ -216,7 +219,7 @@ setInterval(function()
     'LY' : joyLY,
     */
     'RX' : joyRX,
-    'RY' : joyRY * GUI.RangeSpeed,
+    'RY' : joyRY * GUI.RangeSpeed,    
     'SW' : GUI.switchVal,
     'SL' : GUI.sliderVal,
     'OF' : GUI.OrientFlag
