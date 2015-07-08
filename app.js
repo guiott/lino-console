@@ -9,6 +9,9 @@ var bodyParser = require('body-parser');
 var rxTx = require('rxTx.js');
 var webClient = require('webClient.js');
 var events = require('events');
+
+var exec = require('child_process').exec,
+    child;
     
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -16,6 +19,21 @@ var users = require('./routes/users');
 serialport = require("serialport");	// include the serialport library
 SerialPort = serialport.SerialPort; // make a local instance of serial
 
+b =require('bonescript');
+sw1 = 'P9_15';
+sw2 = 'P9_12';
+b.pinMode(sw1, b.INPUT);
+b.pinMode(sw2, b.INPUT);
+//console.log("SW1="+b.digitalRead(sw1)+"  SW2="+b.digitalRead(sw2)); //debug
+
+if(b.digitalRead(sw1))
+{
+  child = exec('/etc/network/net.sh AP___lino');
+}
+else
+{
+  child = exec('/etc/network/net.sh SPTNETFREE7');
+}
 var app = express();
 
 /* ========Copied from bin/www. required if you want to use the old method without www
