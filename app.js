@@ -127,11 +127,15 @@ upTime = Date.now();
 
 //-------------------------------Websocket
 // Add a connect listener
+var GUItimeout = 5000; // timeout on command receive from GUI web client
+var GUItime = 0; //current time since last json packet
+
 io.sockets.on('connection', function(client)
 {   // Success!  Now listen to messages to be received
 	client.on('message',function(event)
 	{ 
 	  // console.log("socket"); //debug
+      GUItime = Date.now(); // reset timeout counting
       var GUI = JSON.parse(event);
       
       if ((GUI.RX === 0) && (GUI.RY === 0))
@@ -344,6 +348,13 @@ var imuTx=setInterval(function(){imuTxTimer();},txTick);
   
 function imuTxTimer()
 {// every txTick ms
+  if((Date.now()-GUItime) > GUItimeout) //no command for too much time from GUI
+  {
+    GUItime = Date.now(); // reset timeout counting
+    console.log(ISODateString()+"----Cmd:   Err: 9 <NO COMMANDS FROM WEB CLIENT FOR TOO MUCH TIME!>  STOPPING MOTORS");
+    DES.vel = 0x7FFF;	// ...all motors stopped
+  }
+  
   if (WFAflag === 0) // idle state 
   {
     if((imuOpenFlag === 1) && (llsOpenFlag === 1) );
