@@ -20,19 +20,52 @@ serialport = require("serialport");	// include the serialport library
 SerialPort = serialport.SerialPort; // make a local instance of serial
 
 b =require('bonescript');
-sw1 = 'P9_15';
-sw2 = 'P9_12';
+sw1 = 'P9_12';
+sw2 = 'P9_15';
+sw3 = 'P9_17';
+sw4 = 'P9_18';
 b.pinMode(sw1, b.INPUT);
 b.pinMode(sw2, b.INPUT);
-//console.log("SW1="+b.digitalRead(sw1)+"  SW2="+b.digitalRead(sw2)); //debug
+b.pinMode(sw3, b.INPUT);
+b.pinMode(sw4, b.INPUT);
+//console.log("SW1="+b.digitalRead(sw1)+"  SW2="+b.digitalRead(sw2)+"  SW3="+b.digitalRead(sw3)+"  SW4="+b.digitalRead(sw4)); //debug
 
+/* debug
+b.getPinMode("P9_15", printPinMux);
+function printStatus(x) {
+    console.log('value = ' + x.value);
+    console.log('err = ' + x.err);
+}
+function printPinMux(x) {
+    console.log('mux = ' + x.mux);
+    console.log('pullup = ' + x.pullup);
+    console.log('slew = ' + x.slew);
+    console.log('options = ' + x.options.join(','));
+    console.log('err = ' + x.err);
+}
+*/
+
+LedB = 'P9_23';
+LedG = 'P8_7';
+LedY = 'P8_8';
+LedR = 'P8_9';
+b.pinMode(LedB, b.OUTPUT);
+b.pinMode(LedG, b.OUTPUT);
+b.pinMode(LedY, b.OUTPUT);
+b.pinMode(LedR, b.OUTPUT);
+
+b.digitalWrite(LedB, 0)
+b.digitalWrite(LedG, 0)
+b.digitalWrite(LedY, 0)
+b.digitalWrite(LedR, 0)
+  
 if(b.digitalRead(sw1))
 {
-  child = exec('/etc/network/net.sh AP___lino');
+//  child = exec('/etc/network/net.sh AP___lino');
 }
 else
 {
-  child = exec('/etc/network/net.sh SPTNETFREE7');
+//  child = exec('/etc/network/net.sh WiFi_Guiott');
 }
 var app = express();
 
@@ -128,7 +161,7 @@ upTime = Date.now();
 //-------------------------------Websocket
 // Add a connect listener
 var GUItimeout = 5000; // timeout on command receive from GUI web client
-var GUItime = 0; //current time since last json packet
+GUItime = 0; //current time since last json packet
 
 io.sockets.on('connection', function(client)
 {   // Success!  Now listen to messages to be received
@@ -345,14 +378,24 @@ llsPort.on('error', function (data)
 
 // =====================================idle cycle. executed on event schedule
 var imuTx=setInterval(function(){imuTxTimer();},txTick);
-  
+var HBledCount=0;	//Heart Beat Led 
+var HBledCycle=20;	//Blinking cycle time
+var HBled=0;
+
 function imuTxTimer()
 {// every txTick ms
+  HBledCount++;
+  if(HBledCount >= HBledCycle)
+  {//Blink LedB on idle cycle
+  	HBledCount=0;
+  	HBled=HBled ^ 1;
+  	b.digitalWrite(LedB, HBled);
+  }
+  
   if((Date.now()-GUItime) > GUItimeout) //no command for too much time from GUI
   {
-    GUItime = Date.now(); // reset timeout counting
-    console.log(ISODateString()+"----Cmd:   Err: 9 <NO COMMANDS FROM WEB CLIENT FOR TOO MUCH TIME!>  STOPPING MOTORS");
-    DES.vel = 0x7FFF;	// ...all motors stopped
+  	DES.vel = 0;
+    RxError(9);
   }
   
   if (WFAflag === 0) // idle state 
